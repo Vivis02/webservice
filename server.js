@@ -5,22 +5,23 @@ app.use(express.json());
 
 let items = [];
 
-// GET todos los items
+// GET
 app.get("/items", (req, res) => {
   res.json(items);
 });
 
-// POST crear item
+// POST
 app.post("/items", (req, res) => {
   const nuevoItem = req.body;
   items.push(nuevoItem);
   res.json({
-    mensaje: "Item agregado",
-    item: nuevoItem,
+    mensaje: "Item agregado correctamente",
+    item: nuevoItem
   });
 });
 
 const port = process.env.PORT || 3000;
+
 app.listen(port, () => {
-  console.log("Servidor iniciado en puerto", port);
+  console.log("Servidor corriendo en puerto", port);
 });
