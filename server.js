@@ -4,30 +4,42 @@ const app = express();
 app.use(express.json());
 
 let items = [];
-let idCounter = 1;
+let contadorId = 1; // contador para IDs
 
-// GET - Obtener todos
+// GET - obtener todos
 app.get("/items", (req, res) => {
   res.json(items);
 });
 
-// POST - Crear nuevo
+// GET por ID
+app.get("/items/:id", (req, res) => {
+  const id = parseInt(req.params.id);
+  const item = items.find(i => i.id === id);
+
+  if (!item) {
+    return res.status(404).json({ mensaje: "Item no encontrado" });
+  }
+
+  res.json(item);
+});
+
+// POST - crear nuevo
 app.post("/items", (req, res) => {
   const nuevoItem = {
-    id: idCounter++,
+    id: contadorId++,
     nombre: req.body.nombre,
     precio: req.body.precio
   };
 
   items.push(nuevoItem);
 
-  res.json({
+  res.status(201).json({
     mensaje: "Item agregado correctamente",
     item: nuevoItem
   });
 });
 
-// PUT - Modificar
+// PUT - actualizar
 app.put("/items/:id", (req, res) => {
   const id = parseInt(req.params.id);
   const item = items.find(i => i.id === id);
@@ -36,16 +48,16 @@ app.put("/items/:id", (req, res) => {
     return res.status(404).json({ mensaje: "Item no encontrado" });
   }
 
-  item.nombre = req.body.nombre || item.nombre;
-  item.precio = req.body.precio || item.precio;
+  item.nombre = req.body.nombre ?? item.nombre;
+  item.precio = req.body.precio ?? item.precio;
 
   res.json({
-    mensaje: "Item actualizado correctamente",
+    mensaje: "Item actualizado",
     item
   });
 });
 
-// DELETE - Eliminar
+// DELETE - eliminar
 app.delete("/items/:id", (req, res) => {
   const id = parseInt(req.params.id);
   const index = items.findIndex(i => i.id === id);
@@ -54,12 +66,9 @@ app.delete("/items/:id", (req, res) => {
     return res.status(404).json({ mensaje: "Item no encontrado" });
   }
 
-  const eliminado = items.splice(index, 1);
+  items.splice(index, 1);
 
-  res.json({
-    mensaje: "Item eliminado correctamente",
-    item: eliminado[0]
-  });
+  res.json({ mensaje: "Item eliminado correctamente" });
 });
 
 const port = process.env.PORT || 3000;
